@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Grades & Transcripts{% endblock %}
+
+{% block breadcrumb %}
+  <a href="{{ url_for('dashboard') }}" class="breadcrumb-item">Dashboard</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <span class="breadcrumb-item active">Grades</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Academic Grades & Transcripts</h1>
+    <p class="page-sub">Monitor student GPA performance, midterm/final scores, and evaluation standings.</p>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn-primary-custom" onclick="alert('Exporting official university grade transcript report...')">
+      <i class="bi bi-file-earmark-arrow-down me-2"></i>Export Grade Sheet
+    </button>
+  </div>
+</div>
+
+<!-- GPA Distribution Cards -->
+<div class="stats-grid mb-4">
+  <div class="stat-card stat-green">
+    <div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">3.48</div>
+      <div class="stat-label">Average University GPA</div>
+      <div class="stat-trend positive"><i class="bi bi-arrow-up-short"></i> +0.12 vs last semester</div>
+    </div>
+  </div>
+  <div class="stat-card stat-blue">
+    <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="38">0</div>
+      <div class="stat-label">Dean's Honor List</div>
+      <div class="stat-trend positive"><i class="bi bi-check-circle"></i> GPA &gt;= 3.80</div>
+    </div>
+  </div>
+  <div class="stat-card stat-purple">
+    <div class="stat-icon"><i class="bi bi-pie-chart-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">94.2%</div>
+      <div class="stat-label">Passing Rate</div>
+      <div class="stat-trend positive"><i class="bi bi-arrow-up-short"></i> Top 10% nationwide</div>
+    </div>
+  </div>
+  <div class="stat-card stat-orange">
+    <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="4">0</div>
+      <div class="stat-label">Academic Probation</div>
+      <div class="stat-trend neutral"><i class="bi bi-dash"></i> Need guidance</div>
+    </div>
+  </div>
+</div>
+
+<!-- Grades Records Table -->
+<div class="data-table-card">
+  <table class="data-table" id="gradesTable">
+    <thead>
+      <tr>
+        <th class="sortable">Student</th>
+        <th class="sortable">Course</th>
+        <th class="sortable">Midterm (30)</th>
+        <th class="sortable">Coursework (30)</th>
+        <th class="sortable">Final (40)</th>
+        <th class="sortable">Total (100)</th>
+        <th class="sortable">Grade</th>
+        <th class="sortable">GPA</th>
+        <th>Standing</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for g in grade_records %}
+      <tr>
+        <td>
+          <div class="student-mini">
+            <img src="{{ g.avatar_url }}" alt="{{ g.student_name }}" class="avatar-sm">
+            <div>
+              <div class="student-mini-name">{{ g.student_name }}</div>
+              <div class="student-mini-id">{{ g.student_id }}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="dept-tag">{{ g.course_code }}</span>
+          <small class="d-block text-muted">{{ g.course_title }}</small>
+        </td>
+        <td><strong>{{ g.midterm }}</strong>/30</td>
+        <td><strong>{{ g.coursework }}</strong>/30</td>
+        <td><strong>{{ g.final }}</strong>/40</td>
+        <td><strong class="text-primary fs-6">{{ g.total }}</strong></td>
+        <td>
+          <span class="badge {% if g.grade in ['A+','A'] %}bg-success{% elif g.grade in ['B+','B'] %}bg-primary{% elif g.grade in ['C+','C'] %}bg-warning text-dark{% else %}bg-danger{% endif %} px-2 py-1">
+            {{ g.grade }}
+          </span>
+        </td>
+        <td><strong>{{ g.gpa }}</strong></td>
+        <td>
+          <span class="status-badge {% if g.total >= 80 %}status-active{% elif g.total >= 60 %}status-graduated{% else %}status-inactive{% endif %}">
+            <span class="status-dot"></span>
+            {% if g.total >= 80 %}Excellent{% elif g.total >= 70 %}Very Good{% elif g.total >= 60 %}Good{% else %}At Risk{% endif %}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block breadcrumb %}
+  <a href="{{ url_for('dashboard') }}" class="breadcrumb-item">Dashboard</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <span class="breadcrumb-item active">Students</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Students Management</h1>
+    <p class="page-sub">Manage and track all enrolled students across departments.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('export_students') }}" class="btn-outline-custom me-2"><i class="bi bi-file-earmark-arrow-down me-1"></i>Export CSV</a>
+    <a href="{{ url_for('add_student') }}" class="btn-primary-custom"><i class="bi bi-person-plus-fill me-2"></i>Add Student</a>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-card">
+  <form method="GET" action="{{ url_for('students') }}" id="filterForm">
+    <div class="filter-row">
+      <div class="filter-search-wrap">
+        <i class="bi bi-search filter-search-icon"></i>
+        <input type="text" name="q" value="{{ q }}" class="filter-input filter-search"
+               placeholder="Search by name, email, or ID…" id="searchInput" autocomplete="off">
+        {% if q %}<button type="button" class="filter-clear-btn" onclick="clearSearch()"><i class="bi bi-x-circle-fill"></i></button>{% endif %}
+      </div>
+      <select name="department" class="filter-input filter-select" onchange="this.form.submit()">
+        <option value="">All Departments</option>
+        {% for d in departments %}
+        <option value="{{ d }}" {% if dept==d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+      <select name="status" class="filter-input filter-select" onchange="this.form.submit()">
+        <option value="">All Statuses</option>
+        <option value="Active"    {% if status=='Active'    %}selected{% endif %}>Active</option>
+        <option value="Inactive"  {% if status=='Inactive'  %}selected{% endif %}>Inactive</option>
+        <option value="Graduated" {% if status=='Graduated' %}selected{% endif %}>Graduated</option>
+        <option value="Suspended" {% if status=='Suspended' %}selected{% endif %}>Suspended</option>
+      </select>
+      <button type="submit" class="btn-primary-custom btn-sm-filter"><i class="bi bi-funnel-fill me-1"></i>Filter</button>
+      {% if q or dept or status %}
+      <a href="{{ url_for('students') }}" class="btn-outline-custom btn-sm-filter"><i class="bi bi-x-lg me-1"></i>Clear</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Results Info -->
+<div class="results-info">
+  Showing <strong>{{ students|length }}</strong> of <strong>{{ total_students }}</strong> students
+  {% if q or dept or status %}<span class="filter-active-tag"><i class="bi bi-funnel-fill me-1"></i>Filtered</span>{% endif %}
+</div>
+
+{% if students %}
+<!-- Data Table -->
+<div class="data-table-card">
+  <table class="data-table" id="studentsTable">
+    <thead>
+      <tr>
+        <th style="width:40px"><input type="checkbox" class="form-check-input" id="selectAll" title="Select All"></th>
+        <th class="sortable">Student</th>
+        <th class="sortable">Student ID</th>
+        <th class="sortable">Department</th>
+        <th class="sortable">Enrolled</th>
+        <th class="sortable">Status</th>
+        <th style="width:100px">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr class="student-row" data-id="{{ student.id }}">
+        <td onclick="event.stopPropagation()"><input type="checkbox" class="form-check-input row-check"></td>
+        <td>
+          <div class="student-cell">
+            <img src="{{ student.avatar_url }}" alt="{{ student.full_name }}" class="avatar-md"
+                 onerror="this.src='https://ui-avatars.com/api/?name={{ student.full_name|urlencode }}&background=1e3a5f&color=fff&size=64'">
+            <div class="student-cell-info">
+              <div class="student-cell-name">{{ student.full_name }}</div>
+              <div class="student-cell-email">{{ student.email }}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="student-id-tag">{{ student.student_id }}</span></td>
+        <td><span class="dept-tag">{{ student.department }}</span></td>
+        <td class="text-muted-cell">{{ student.enrollment_date }}</td>
+        <td>
+          <span class="status-badge status-{{ student.status|lower }}">
+            <span class="status-dot"></span>{{ student.status }}
+          </span>
+        </td>
+        <td onclick="event.stopPropagation()">
+          <div class="action-buttons">
+            <a href="{{ url_for('edit_student', student_id=student.id) }}" class="action-btn action-edit" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+            <button class="action-btn action-delete" title="Delete"
+                    onclick="confirmDelete('{{ student.id }}','{{ student.full_name }}')">
+              <i class="bi bi-trash3-fill"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination-wrap">
+  <div class="pagination-info">Page {{ current_page }} of {{ total_pages }}</div>
+  <nav>
+    <ul class="pagination-custom">
+      <li>
+        <a href="{{ url_for('students', page=current_page-1, q=q, department=dept, status=status) }}"
+           class="page-btn {% if current_page==1 %}disabled{% endif %}"><i class="bi bi-chevron-left"></i></a>
+      </li>
+      {% for p in range(1, total_pages+1) %}
+      <li>
+        <a href="{{ url_for('students', page=p, q=q, department=dept, status=status) }}"
+           class="page-btn {% if p==current_page %}active{% endif %}">{{ p }}</a>
+      </li>
+      {% endfor %}
+      <li>
+        <a href="{{ url_for('students', page=current_page+1, q=q, department=dept, status=status) }}"
+           class="page-btn {% if current_page==total_pages %}disabled{% endif %}"><i class="bi bi-chevron-right"></i></a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+  <div class="empty-icon"><i class="bi bi-people"></i></div>
+  <h3 class="empty-title">No students found</h3>
+  <p class="empty-desc">{% if q or dept or status %}Try adjusting your filters or search terms.{% else %}Get started by adding your first student.{% endif %}</p>
+  {% if q or dept or status %}
+  <a href="{{ url_for('students') }}" class="btn-outline-custom">Clear Filters</a>
+  {% else %}
+  <a href="{{ url_for('add_student') }}" class="btn-primary-custom"><i class="bi bi-person-plus-fill me-2"></i>Add First Student</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/students.js') }}"></script>
+<script>
+function confirmDelete(id, name) {
+  document.getElementById('deleteModalDesc').textContent =
+    'You are about to permanently delete student "' + name + '". This cannot be undone.';
+  document.getElementById('deleteForm').action = '/students/' + id + '/delete';
+  new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterForm').submit();
+}
+</script>
+{% endblock %}
+

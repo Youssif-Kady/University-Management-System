@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Academic Schedule{% endblock %}
+
+{% block breadcrumb %}
+  <a href="{{ url_for('dashboard') }}" class="breadcrumb-item">Dashboard</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <span class="breadcrumb-item active">Schedule</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Academic Timetable & Schedule</h1>
+    <p class="page-sub">Weekly lecture schedules, lecture halls, and laboratory allocations.</p>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn-outline-custom" onclick="window.print()"><i class="bi bi-printer me-2"></i>Print Schedule</button>
+  </div>
+</div>
+
+<!-- Timetable Card -->
+<div class="data-table-card p-4">
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-primary px-3 py-2 fs-6"><i class="bi bi-calendar3 me-1"></i> Spring Semester 2026</span>
+      <span class="badge bg-light text-dark border px-3 py-2">Week 8</span>
+    </div>
+    <div class="d-flex gap-2">
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle p-2">Lecture</span>
+      <span class="badge bg-success-subtle text-success border border-success-subtle p-2">Lab / Practical</span>
+      <span class="badge bg-warning-subtle text-warning border border-warning-subtle p-2">Tutorial / Discussion</span>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle" style="min-width: 800px;">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 120px;">Time / Day</th>
+          <th>Monday</th>
+          <th>Tuesday</th>
+          <th>Wednesday</th>
+          <th>Thursday</th>
+          <th>Friday</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw-bold bg-light">08:30 - 10:00</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">CS101: Intro to Computing</div>
+              <small><i class="bi bi-geo-alt"></i> Hall A-101 &bull; Dr. Adams</small>
+            </div>
+          </td>
+          <td>—</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">CS101: Intro to Computing</div>
+              <small><i class="bi bi-geo-alt"></i> Hall A-101 &bull; Dr. Adams</small>
+            </div>
+          </td>
+          <td>—</td>
+          <td>
+            <div class="p-2 rounded bg-warning text-dark text-start shadow-sm">
+              <div class="fw-bold">CS101: Tutorial Session</div>
+              <small><i class="bi bi-geo-alt"></i> Room 204 &bull; TA Mark</small>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold bg-light">10:15 - 11:45</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">MATH201: Linear Algebra</div>
+              <small><i class="bi bi-geo-alt"></i> Science Bldg S-3 &bull; Prof. Evans</small>
+            </div>
+          </td>
+          <td>
+            <div class="p-2 rounded bg-success text-white text-start shadow-sm">
+              <div class="fw-bold">EE102: Circuits Lab</div>
+              <small><i class="bi bi-geo-alt"></i> Lab 4B &bull; Eng. Foster</small>
+            </div>
+          </td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">MATH201: Linear Algebra</div>
+              <small><i class="bi bi-geo-alt"></i> Science Bldg S-3 &bull; Prof. Evans</small>
+            </div>
+          </td>
+          <td>
+            <div class="p-2 rounded bg-success text-white text-start shadow-sm">
+              <div class="fw-bold">EE102: Circuits Lab</div>
+              <small><i class="bi bi-geo-alt"></i> Lab 4B &bull; Eng. Foster</small>
+            </div>
+          </td>
+          <td>—</td>
+        </tr>
+        <tr class="table-secondary">
+          <td class="fw-bold py-1" colspan="6"><small><i class="bi bi-cup-hot me-1"></i> Lunch & Midday Break (11:45 - 12:45)</small></td>
+        </tr>
+        <tr>
+          <td class="fw-bold bg-light">12:45 - 14:15</td>
+          <td>—</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">BA301: Business Ethics</div>
+              <small><i class="bi bi-geo-alt"></i> Hall B-2 &bull; Dr. Sophia Reed</small>
+            </div>
+          </td>
+          <td>
+            <div class="p-2 rounded bg-success text-white text-start shadow-sm">
+              <div class="fw-bold">CS102: Programming Lab</div>
+              <small><i class="bi bi-geo-alt"></i> Computer Lab 1 &bull; Eng. Tariq</small>
+            </div>
+          </td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">BA301: Business Ethics</div>
+              <small><i class="bi bi-geo-alt"></i> Hall B-2 &bull; Dr. Sophia Reed</small>
+            </div>
+          </td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="fw-bold bg-light">14:30 - 16:00</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">SE204: Software Architecture</div>
+              <small><i class="bi bi-geo-alt"></i> Hall C-10 &bull; Dr. Chen</small>
+            </div>
+          </td>
+          <td>—</td>
+          <td>
+            <div class="p-2 rounded bg-primary text-white text-start shadow-sm">
+              <div class="fw-bold">SE204: Software Architecture</div>
+              <small><i class="bi bi-geo-alt"></i> Hall C-10 &bull; Dr. Chen</small>
+            </div>
+          </td>
+          <td>—</td>
+          <td>
+            <div class="p-2 rounded bg-warning text-dark text-start shadow-sm">
+              <div class="fw-bold">Project Seminar & Mentorship</div>
+              <small><i class="bi bi-geo-alt"></i> Auditorium 1 &bull; Faculty Panel</small>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

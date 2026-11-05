@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Add Student{% endblock %}
+{% block breadcrumb %}
+  <a href="{{ url_for('dashboard') }}" class="breadcrumb-item">Dashboard</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <a href="{{ url_for('students') }}" class="breadcrumb-item">Students</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <span class="breadcrumb-item active">Add Student</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Add New Student</h1>
+    <p class="page-sub">Fill in the form below to register a new student into the system.</p>
+  </div>
+</div>
+
+<div class="form-layout">
+  <!-- Sidebar: Avatar + ID Card Preview -->
+  <div class="form-sidebar-col">
+    <div class="avatar-upload-card">
+      <div class="avatar-preview-wrap" id="avatarWrap">
+        <img id="avatarPreview"
+             src="https://ui-avatars.com/api/?name=New+Student&background=1e3a5f&color=fff&size=200"
+             alt="Student Avatar" class="avatar-preview-img">
+        <div class="avatar-overlay" onclick="document.getElementById('avatarInput').click()">
+          <i class="bi bi-camera-fill"></i><span>Upload Photo</span>
+        </div>
+      </div>
+      <p class="avatar-hint">Click the photo to upload. JPG, PNG or WebP. Max 5MB.</p>
+      {% if errors.avatar %}<p class="field-error">{{ errors.avatar }}</p>{% endif %}
+    </div>
+    <div class="id-preview-card">
+      <div class="id-card-header"><i class="bi bi-mortarboard-fill me-2"></i>UniManage University</div>
+      <div class="id-card-body">
+        <div class="id-name" id="previewName">Full Name</div>
+        <div class="id-dept" id="previewDept">Department</div>
+        <div class="id-sid"  id="previewId">Student ID</div>
+      </div>
+      <div class="id-card-footer">Student Identification Card</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-main-col">
+    <form method="POST" enctype="multipart/form-data" id="addStudentForm" novalidate>
+      <input type="file" name="avatar" id="avatarInput" accept="image/*" class="d-none">
+
+      <!-- Personal Info -->
+      <div class="form-section">
+        <div class="form-section-header"><i class="bi bi-person-fill"></i><span>Personal Information</span></div>
+        <div class="form-grid-2">
+          <div class="form-group-custom {% if errors.full_name %}has-error{% endif %}">
+            <label class="form-label-custom">Full Name <span class="required">*</span></label>
+            <input type="text" name="full_name" id="fullNameInput" class="form-control-custom"
+                   value="{{ form.get('full_name','') }}" placeholder="e.g. Alexandra Johnson" required>
+            {% if errors.full_name %}<span class="field-error">{{ errors.full_name }}</span>{% endif %}
+          </div>
+          <div class="form-group-custom {% if errors.student_id %}has-error{% endif %}">
+            <label class="form-label-custom">Student ID <span class="required">*</span></label>
+            <input type="text" name="student_id" id="studentIdInput" class="form-control-custom"
+                   value="{{ form.get('student_id','') }}" placeholder="e.g. STU-2024-001" required>
+            {% if errors.student_id %}<span class="field-error">{{ errors.student_id }}</span>{% endif %}
+          </div>
+          <div class="form-group-custom {% if errors.email %}has-error{% endif %}">
+            <label class="form-label-custom">Email Address <span class="required">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-envelope-fill input-icon"></i>
+              <input type="email" name="email" class="form-control-custom with-icon"
+                     value="{{ form.get('email','') }}" placeholder="student@unimanage.edu" required>
+            </div>
+            {% if errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+          </div>
+          <div class="form-group-custom {% if errors.phone %}has-error{% endif %}">
+            <label class="form-label-custom">Phone Number <span class="required">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-telephone-fill input-icon"></i>
+              <input type="tel" name="phone" class="form-control-custom with-icon"
+                     value="{{ form.get('phone','') }}" placeholder="+1-555-0100" required>
+            </div>
+            {% if errors.phone %}<span class="field-error">{{ errors.phone }}</span>{% endif %}
+          </div>
+          <div class="form-group-custom {% if errors.dob %}has-error{% endif %}">
+            <label class="form-label-custom">Date of Birth <span class="required">*</span></label>
+            <input type="date" name="dob" class="form-control-custom"
+                   value="{{ form.get('dob','') }}" max="2010-01-01" required>
+            {% if errors.dob %}<span class="field-error">{{ errors.dob }}</span>{% endif %}
+          </div>
+          <div class="form-group-custom {% if errors.enrollment_date %}has-error{% endif %}">
+            <label class="form-label-custom">Enrollment Date <span class="required">*</span></label>
+            <input type="date" name="enrollment_date" class="form-control-custom"
+                   value="{{ form.get('enrollment_date','') }}" required>
+            {% if errors.enrollment_date %}<span class="field-error">{{ errors.enrollment_date }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Info -->
+      <div class="form-section">
+        <div class="form-section-header"><i class="bi bi-journal-bookmark-fill"></i><span>Academic Information</span></div>
+        <div class="form-grid-2">
+          <div class="form-group-custom {% if errors.department %}has-error{% endif %}">
+            <label class="form-label-custom">Department <span class="required">*</span></label>
+            <select name="department" id="deptSelect" class="form-control-custom" required>
+              <option value="">Select Department…</option>
+              {% for d in departments %}
+              <option value="{{ d }}" {% if form.get('department')==d %}selected{% endif %}>{{ d }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.department %}<span class="field-error">{{ errors.department }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <a href="{{ url_for('students') }}" class="btn-outline-custom"><i class="bi bi-x-lg me-2"></i>Cancel</a>
+        <button type="button" class="btn-secondary-custom" onclick="resetForm()"><i class="bi bi-arrow-counterclockwise me-2"></i>Reset</button>
+        <button type="submit" class="btn-primary-custom" id="submitBtn"><i class="bi bi-person-plus-fill me-2"></i>Register Student</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/add_student.js') }}"></script>
+{% endblock %}
+

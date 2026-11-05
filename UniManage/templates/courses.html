@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Courses{% endblock %}
+
+{% block breadcrumb %}
+  <a href="{{ url_for('dashboard') }}" class="breadcrumb-item">Dashboard</a>
+  <i class="bi bi-chevron-right breadcrumb-sep"></i>
+  <span class="breadcrumb-item active">Courses</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">University Courses</h1>
+    <p class="page-sub">Manage academic curriculum, departments, instructors, and enrollments.</p>
+  </div>
+  <div class="page-header-actions">
+    <button type="button" class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+      <i class="bi bi-journal-plus me-2"></i>Add Course
+    </button>
+  </div>
+</div>
+
+<!-- Courses Stats Overview -->
+<div class="stats-grid mb-4">
+  <div class="stat-card stat-blue">
+    <div class="stat-icon"><i class="bi bi-journal-bookmark-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="{{ courses|length }}">0</div>
+      <div class="stat-label">Active Courses</div>
+      <div class="stat-trend positive"><i class="bi bi-check-circle"></i> 100% Accredited</div>
+    </div>
+  </div>
+  <div class="stat-card stat-purple">
+    <div class="stat-icon"><i class="bi bi-mortarboard-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="{{ total_enrolled }}">0</div>
+      <div class="stat-label">Course Enrollments</div>
+      <div class="stat-trend positive"><i class="bi bi-arrow-up-short"></i> Active this semester</div>
+    </div>
+  </div>
+  <div class="stat-card stat-green">
+    <div class="stat-icon"><i class="bi bi-person-workspace"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="{{ departments|length }}">0</div>
+      <div class="stat-label">Departments</div>
+      <div class="stat-trend neutral"><i class="bi bi-dash"></i> Multi-disciplinary</div>
+    </div>
+  </div>
+  <div class="stat-card stat-orange">
+    <div class="stat-icon"><i class="bi bi-award-fill"></i></div>
+    <div class="stat-info">
+      <div class="stat-value" data-count="36">0</div>
+      <div class="stat-label">Total Faculty Professors</div>
+      <div class="stat-trend positive"><i class="bi bi-star-fill"></i> Top rated</div>
+    </div>
+  </div>
+</div>
+
+<!-- Courses Data Table -->
+<div class="data-table-card">
+  <table class="data-table" id="coursesTable">
+    <thead>
+      <tr>
+        <th class="sortable">Code</th>
+        <th class="sortable">Course Title</th>
+        <th class="sortable">Department</th>
+        <th class="sortable">Credits</th>
+        <th class="sortable">Instructor</th>
+        <th class="sortable">Enrolled</th>
+        <th class="sortable">Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td><strong class="student-id-tag">{{ c.code }}</strong></td>
+        <td>
+          <div class="fw-semibold text-main">{{ c.title }}</div>
+          <small class="text-muted">{{ c.level }}</small>
+        </td>
+        <td><span class="dept-tag">{{ c.department }}</span></td>
+        <td><span class="badge bg-light text-dark border">{{ c.credits }} CH</span></td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle text-primary"></i>
+            <span>{{ c.instructor }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <div class="progress flex-grow-1" style="height: 6px; width: 60px; background: #e2e8f0;">
+              <div class="progress-bar bg-primary" style="width: {{ (c.enrolled / 40 * 100)|round }}%;"></div>
+            </div>
+            <small class="fw-bold">{{ c.enrolled }}/40</small>
+          </div>
+        </td>
+        <td>
+          <span class="status-badge status-active">
+            <span class="status-dot"></span>Active
+          </span>
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="action-btn action-edit" title="Edit Course" onclick="alert('Editing {{ c.code }}: {{ c.title }}')">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button class="action-btn action-delete" title="Delete Course" onclick="alert('Course {{ c.code }} is locked for current semester')">
+              <i class="bi bi-trash3-fill"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Add Course Modal -->
+<div class="modal fade" id="addCourseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-custom p-3">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-custom-title"><i class="bi bi-journal-plus text-primary me-2"></i>Add New Course</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('add_course') }}">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label-custom">Course Code <span class="required">*</span></label>
+            <input type="text" name="code" class="form-control-custom" placeholder="e.g. CS302" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label-custom">Course Title <span class="required">*</span></label>
+            <input type="text" name="title" class="form-control-custom" placeholder="e.g. Data Structures & Algorithms" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label-custom">Department <span class="required">*</span></label>
+              <select name="department" class="form-control-custom" required>
+                {% for d in departments %}
+                <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label-custom">Credit Hours <span class="required">*</span></label>
+              <select name="credits" class="form-control-custom" required>
+                <option value="1">1 Credit</option>
+                <option value="2">2 Credits</option>
+                <option value="3" selected>3 Credits</option>
+                <option value="4">4 Credits</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label-custom">Lead Instructor <span class="required">*</span></label>
+            <input type="text" name="instructor" class="form-control-custom" placeholder="e.g. Dr. Robert Vance" required>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-primary-custom">Create Course</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
